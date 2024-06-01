@@ -1,0 +1,52 @@
+name: Apply Terraform 
+run-name: Starting to apply terraform
+on: 
+  push:
+    branches:
+      - "main"
+jobs:
+  update-infrastructure:
+    runs-on: ubuntu-22.04
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: eu-west-3
+      TF_VAR_DB_USERNAME:  ${{ secrets.DB_USERNAME }}
+      TF_VAR_DB_PASSWORD:  ${{ secrets.DB_PASSWORD }}
+      TF_VAR_GRAFANA_PASSWORD:  ${{ secrets.GRAFANA_PASSWORD }}
+    
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+        # check https://github.com/marketplace/actions/hashicorp-setup-terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.5"
+          terraform_wrapper: false
+      
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+      
+      - name: Terraform Init
+        id: init
+        run: terraform init
+      
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+      
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color  -detailed-exitcode
+        continue-on-error: true
+        
+      - name: Terraform apply
+        id: apply
+        run: terraform apply -auto-approve
+
