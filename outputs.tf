@@ -1,13 +1,34 @@
 # DB outputs
-output "db_instance_endpoint" {
-  description = "database endpoint"
-  value       = module.db.db_instance_endpoint
+output "vet_db_instance_endpoint" {
+  description = "Vet database endpoint"
+  value       = module.vet_db.db_instance_endpoint
 }
 
-output "database_port" {
-  description = "database instance port"
-  value       = module.db.db_instance_port
+output "visit_db_instance_endpoint" {
+  description = "Visit database endpoint"
+  value       = module.visit_db.db_instance_endpoint
 }
+
+output "customer_db_instance_endpoint" {
+  description = "Customer database endpoint"
+  value       = module.customer_db.db_instance_endpoint
+}
+
+output "vet_db_instance_port" {
+  description = "Vet database instance port"
+  value       = module.vet_db.db_instance_port
+}
+
+output "visit_db_instance_port" {
+  description = "Visit database instance port"
+  value       = module.visit_db.db_instance_port
+}
+
+output "customer_db_instance_port" {
+  description = "Customer database instance port"
+  value       = module.customer_db.db_instance_port
+}
+
 
 # output "database_instance_username" {
 #  description = "database instance username"
