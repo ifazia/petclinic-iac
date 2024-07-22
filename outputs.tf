@@ -30,17 +30,38 @@ output "customer_db_instance_port" {
 }
 
 
-# output "database_instance_username" {
-#  description = "database instance username"
-#  value       = module.db.db_instance_username
-#  sensitive = true
-# }
+output "vet_db_instance_username" {
+  description = "Vet database instance username"
+  value       = module.vet_db.db_instance_username
+}
 
-# output "database_instance_password" {
-#   description = "database instance password"
-#   value = var.db_password
-#   sensitive = true
-# }
+output "vet_db_instance_password" {
+  description = "Vet database instance password"
+  value       = module.vet_db.db_instance_password
+  sensitive   = true
+}
+
+output "visit_db_instance_username" {
+  description = "Visit database instance username"
+  value       = module.visit_db.db_instance_username
+}
+
+output "visit_db_instance_password" {
+  description = "Visit database instance password"
+  value       = module.visit_db.db_instance_password
+  sensitive   = true
+}
+
+output "customer_db_instance_username" {
+  description = "Customer database instance username"
+  value       = module.customer_db.db_instance_username
+}
+
+output "customer_db_instance_password" {
+  description = "Customer database instance password"
+  value       = module.customer_db.db_instance_password
+  sensitive   = true
+}
 
 # EKS outputs
 output "cluster_name" {

@@ -24,8 +24,8 @@ module "vet_db" {
   allocated_storage = 5
 
   db_name                     = "vetdb"
-  username                    = var.DB_USERNAME
-  password                    = var.DB_PASSWORD
+  username                    = var.DB_USERNAME_VET
+  password                    = var.DB_PASSWORD_VET
   manage_master_user_password = false
   port                        = "3306"
 
@@ -71,8 +71,8 @@ module "visit_db" {
   allocated_storage = 5
 
   db_name                     = "visitdb"
-  username                    = var.DB_USERNAME
-  password                    = var.DB_PASSWORD
+  username                    = var.DB_USERNAME_VISIT
+  password                    = var.DB_PASSWORD_VISIT
   manage_master_user_password = false
   port                        = "3306"
 
@@ -118,8 +118,8 @@ module "customer_db" {
   allocated_storage = 5
 
   db_name                     = "customerdb"
-  username                    = var.DB_USERNAME
-  password                    = var.DB_PASSWORD
+  username                    = var.DB_USERNAME_CUSTOMER
+  password                    = var.DB_PASSWORD_CUSTOMER
   manage_master_user_password = false
   port                        = "3306"
 
