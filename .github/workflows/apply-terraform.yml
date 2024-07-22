@@ -25,7 +25,6 @@ jobs:
         with:
           fetch-depth: 0
 
-        # check https://github.com/marketplace/actions/hashicorp-setup-terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -39,7 +38,7 @@ jobs:
       
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: terraform init -reconfigure
       
       - name: Terraform Validate
         id: validate
@@ -47,9 +46,9 @@ jobs:
       
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color  -detailed-exitcode
+        run: terraform plan -no-color -detailed-exitcode
         continue-on-error: true
         
-      - name: Terraform apply
+      - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve
