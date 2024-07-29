@@ -1,11 +1,20 @@
 resource "aws_security_group" "petclinic-rds-sg" {
   vpc_id = module.vpc.vpc_id
 
+  # Règle pour autoriser le trafic entrant sur le port 3306 depuis les sous-réseaux privés
   ingress {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
     cidr_blocks = module.vpc.private_subnets_cidr_blocks
+  }
+
+  # Ajoutez d'autres règles d'ingress si nécessaire
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.3.0/24", "10.0.4.0/24"] 
   }
 
   tags = {
