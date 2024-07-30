@@ -14,7 +14,7 @@ resource "aws_security_group" "petclinic-rds-sg" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = ["10.0.3.0/24", "10.0.4.0/24"] 
+    cidr_blocks = ["10.0.1.0/24", "10.0.2.0/24"] 
   }
 
   tags = {
