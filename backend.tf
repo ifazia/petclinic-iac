@@ -1,8 +1,8 @@
 
 terraform {
   backend "s3" {
-    bucket = "tfstate-petclinic"
+    bucket = "tfstate-petclinic-bucket"
     key    = "tfstatefiles/terraform.tfstate"
-    region = "eu-west-3"
+    region = "us-east-1"
   }
 }

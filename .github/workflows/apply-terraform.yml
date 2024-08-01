@@ -10,7 +10,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: eu-west-3
+      AWS_REGION: us-east-1
       TF_VAR_DB_USERNAME_VET:  ${{ secrets.DB_USERNAME_VET }}
       TF_VAR_DB_PASSWORD_VET:  ${{ secrets.DB_PASSWORD_VET }}
       TF_VAR_DB_USERNAME_VISIT:  ${{ secrets.DB_USERNAME_VISIT }}
@@ -48,6 +48,6 @@ jobs:
         id: plan
         run: terraform plan -no-color -detailed-exitcode
         continue-on-error: true
-      - name: Terraform destroy
-        id: destroy
-        run: terraform destroy -auto-approve
+      - name: Terraform apply
+        id: apply
+        run: terraform apply -auto-approve
