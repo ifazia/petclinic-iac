@@ -9,7 +9,6 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
-  role_arn = "arn:aws:iam::969799237091:role/bucket-access-role"
 }
 
 provider "kubernetes" {
