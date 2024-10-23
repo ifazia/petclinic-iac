@@ -25,3 +25,8 @@ variable "GRAFANA_PASSWORD" {
   type        = string
   sensitive   = true
 }
+variable "namespaces" {
+  description = "Liste des namespaces pour l'application"
+  type        = list(string)
+  default     = ["dev", "staging", "production"]
+}
