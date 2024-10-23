@@ -39,3 +39,6 @@ output "cluster_endpoint" {
   description = "Endpoint for EKS control plane"
   value       = module.eks.cluster_endpoint
 }
+output "domain_validation_options" {
+  value = aws_acm_certificate.petclinic_cert.domain_validation_options
+}
