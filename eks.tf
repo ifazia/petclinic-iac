@@ -32,6 +32,16 @@ module "eks" {
       desired_size = 2
     }
   }
+  on_demand = {
+      name = "nodegroup-ondemand"
+
+      instance_types = ["t3.medium"]
+
+      min_size     = 1
+      max_size     = 3
+      desired_size = 2
+      capacity_type = "ON_DEMAND"  # Type de capacité
+    }
 }
 
 module "lb_role" {
