@@ -11,7 +11,7 @@ jobs:
       AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: us-east-1
-      TF_VAR_DB_PASSWORD_VET:  ${{ secrets.DB_USERNAME }}
+      TF_VAR_DB_USERNAME:  ${{ secrets.DB_USERNAME }}
       TF_VAR_DB_PASSWORD_VET:  ${{ secrets.DB_PASSWORD_VET }}
       TF_VAR_DB_PASSWORD_VISIT:  ${{ secrets.DB_PASSWORD_VISIT }}
       TF_VAR_DB_PASSWORD_CUSTOMER:  ${{ secrets.DB_PASSWORD_CUSTOMER }}
