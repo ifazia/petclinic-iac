@@ -11,7 +11,7 @@ resource "aws_route53_record" "www_namespace" {
 
   zone_id = aws_route53_zone.petclinicapp.zone_id
   name     = "www-${each.key}.petclinicapp.net"  # Crée dynamiquement www-dev, www-staging, www-production
-  type     = "A"
+  type     = "CNAME"
   ttl      = 300
   records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
 }
