@@ -1,7 +1,6 @@
 # Définir la zone hébergée
 resource "aws_route53_zone" "petclinicapp" {
   name = "petclinicapp.net"
-  private_zone = false
 }
 
 # Créer le certificat ACM
@@ -16,7 +15,7 @@ resource "aws_acm_certificate" "petclinic_cert" {
 
 # Ajouter l'enregistrement DNS pour la validation du certificat
 resource "aws_route53_record" "petclinic_cert_validation" {
-  for_each = { for idx, val in aws_acm_certificate.petclinic_cert.domain_validation_options : idx => val }
+  for_each = { for idx, option in aws_acm_certificate.petclinic_cert.domain_validation_options : idx => option }
 
   name    = each.value.resource_record_name
   type    = each.value.resource_record_type
