@@ -31,8 +31,7 @@ module "eks" {
       max_size     = 2
       desired_size = 2
     }
-  }
-  on_demand = {
+    on_demand = {
       name = "nodegroup-ondemand"
 
       instance_types = ["t3.medium"]
@@ -41,6 +40,7 @@ module "eks" {
       max_size     = 3
       desired_size = 2
       capacity_type = "ON_DEMAND"  # Type de capacité
+    }
     }
 }
 
