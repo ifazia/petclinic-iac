@@ -1,6 +1,7 @@
 # Définir la zone hébergée
 resource "aws_route53_zone" "petclinicapp" {
   name = "petclinicapp.net"
+  private_zone = false
 }
 
 # Créer le certificat ACM
