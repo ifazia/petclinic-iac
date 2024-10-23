@@ -1,34 +1,21 @@
-variable "DB_USERNAME_VET" {
+variable "DB_USERNAME" {
   description = "Database username"
   type        = string
   sensitive   = true
 }
-
 variable "DB_PASSWORD_VET" {
-  description = "Database password"
-  type        = string
-  sensitive   = true
-}
-
-variable "DB_USERNAME_VISIT" {
-  description = "Database username"
+  description = "Database vetdb password"
   type        = string
   sensitive   = true
 }
 
 variable "DB_PASSWORD_VISIT" {
-  description = "Database password"
+  description = "Database visitdb password"
   type        = string
   sensitive   = true
 }
-variable "DB_USERNAME_CUSTOMER" {
-  description = "Database username"
-  type        = string
-  sensitive   = true
-}
-
 variable "DB_PASSWORD_CUSTOMER" {
-  description = "Database password"
+  description = "Database customerdb password"
   type        = string
   sensitive   = true
 }
