@@ -25,3 +25,11 @@ variable "GRAFANA_PASSWORD" {
   type        = string
   sensitive   = true
 }
+variable "domain_validation_options" {
+  type = list(object({
+    domain_name           = string
+    resource_record_name  = string
+    resource_record_type  = string
+    resource_record_value = string
+  }))
+}
