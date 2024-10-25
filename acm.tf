@@ -34,14 +34,6 @@ resource "aws_route53_record" "cert_validation" {
   ttl     = 300
   records = [each.value.record]
 }
-
-# Validation du certificat ACM
-resource "aws_acm_certificate_validation" "petclinic_cert_validation" {
-  provider                = aws.us-east-1
-  certificate_arn         = aws_acm_certificate.petclinic_cert.arn
-  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
-}
-
 # Crée dynamiquement www-dev, www-staging, www-production
 resource "aws_route53_record" "www_namespace" {
   for_each = toset(var.namespaces)
@@ -51,3 +43,10 @@ resource "aws_route53_record" "www_namespace" {
   type     = "CNAME"
   records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
 }
+# Validation du certificat ACM
+resource "aws_acm_certificate_validation" "petclinic_cert_validation" {
+  provider                = aws.us-east-1
+  certificate_arn         = aws_acm_certificate.petclinic_cert.arn
+  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
+}
+
