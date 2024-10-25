@@ -1,6 +1,12 @@
+# Création de la zone hébergée pour le domaine
+resource "aws_route53_zone" "petclinic_zone" {
+  name    = var.domain_name
+  comment = "Zone hébergée pour le domaine Petclinic"
+}
+
 # Zone hébergée pour le domaine
 data "aws_route53_zone" "domain" {
-  name = var.domain_name
+  name = aws_route53_zone.petclinic_zone.name
 }
 
 # Certificat ACM pour le domaine
@@ -22,7 +28,7 @@ resource "aws_route53_record" "cert_validation" {
       record = dvo.resource_record_value
     }
   }
-  zone_id = data.aws_route53_zone.domain.zone_id
+  zone_id = aws_route53_zone.petclinic_zone.zone_id
   name    = each.value.name
   type    = each.value.type
   ttl     = 60
