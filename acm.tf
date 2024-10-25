@@ -45,6 +45,7 @@ resource "aws_route53_record" "www_namespace" {
   name     = "www-${each.key}.petclinicapp.net"
   type     = "CNAME"
   records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
+  ttl      = 300
 }
 
 
