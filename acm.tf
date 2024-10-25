@@ -36,7 +36,7 @@ resource "aws_route53_record" "petclinic_zone" {
 }
 
 # Crée dynamiquement www-dev, www-staging, www-production
-resource "aws_route53_record" "petclinic_zone" {
+resource "aws_route53_record" "www_namespace" {
   for_each = toset(var.namespaces)
 
   zone_id = aws_route53_zone.petclinic_zone.zone_id
