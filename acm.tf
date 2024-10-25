@@ -18,7 +18,6 @@ resource "aws_acm_certificate" "petclinic_zone" {
     create_before_destroy = true
   }
 }
-}
 
 # Enregistrement DNS pour la validation du certificat
 resource "aws_route53_record" "petclinic_zone" {
