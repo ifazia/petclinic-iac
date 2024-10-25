@@ -5,7 +5,7 @@ resource "aws_route53_zone" "petclinic_zone" {
 }
 
 # Zone hébergée pour le domaine
-data "aws_route53_zone" "domain" {
+data "aws_route53_zone" "petclinic_zone" {
   name = aws_route53_zone.petclinic_zone.name
 }
 
@@ -46,7 +46,7 @@ resource "aws_acm_certificate_validation" "petclinic_cert_validation" {
 resource "aws_route53_record" "www_namespace" {
   for_each = toset(var.namespaces)
 
-  zone_id = aws_route53_zone.petclinicapp.zone_id
+  zone_id = aws_route53_zone.petclinic_zone.zone_id
   name     = "www-${each.key}.var.domain_name"
   type     = "CNAME"
   records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
