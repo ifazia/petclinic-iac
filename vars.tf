@@ -30,3 +30,8 @@ variable "namespaces" {
   type        = list(string)
   default     = ["dev", "staging", "production"]
 }
+# Nom de domaine comme variable
+variable "domain_name" {
+  type    = string
+  default = "petclinicapp.net"
+}

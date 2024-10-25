@@ -1,19 +1,19 @@
-# Définir la zone hébergée
-resource "aws_route53_zone" "petclinicapp" {
-  name = "petclinicapp.net"
+# Zone hébergée pour le domaine
+data "aws_route53_zone" "domain" {
+  name = var.domain_name
 }
 
-# Créer le certificat ACM
+# Certificat ACM pour le domaine
 resource "aws_acm_certificate" "petclinic_cert" {
-  domain_name       = "petclinicapp.net"
+  provider          = aws.us-east-1
+  domain_name       = var.domain_name
   validation_method = "DNS"
-
-  tags = {
-    Name = "petclinic_cert"
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
-# Obtenir les informations de validation DNS du certificat
+# Enregistrement DNS pour la validation du certificat
 resource "aws_route53_record" "cert_validation" {
   for_each = {
     for dvo in aws_acm_certificate.petclinic_cert.domain_validation_options : dvo.domain_name => {
@@ -22,27 +22,16 @@ resource "aws_route53_record" "cert_validation" {
       record = dvo.resource_record_value
     }
   }
-
-  zone_id = aws_route53_zone.petclinicapp.zone_id
+  zone_id = data.aws_route53_zone.domain.zone_id
   name    = each.value.name
   type    = each.value.type
-  ttl     = 300
+  ttl     = 60
   records = [each.value.record]
 }
 
-# Attendre que le certificat soit validé
-resource "aws_acm_certificate_validation" "cert_validation" {
+# Validation du certificat ACM
+resource "aws_acm_certificate_validation" "petclinic_cert_validation" {
+  provider                = aws.us-east-1
   certificate_arn         = aws_acm_certificate.petclinic_cert.arn
-  validation_record_fqdns  = [for record in aws_route53_record.cert_validation : record.fqdn]
-
-  depends_on = [aws_route53_record.cert_validation]
-}
-resource "aws_route53_record" "www_namespace" {
-  for_each = toset(var.namespaces)
-
-  zone_id = aws_route53_zone.petclinicapp.zone_id
-  name     = "www-${each.key}.petclinicapp.net"  # Crée dynamiquement www-dev, www-staging, www-production
-  type     = "CNAME"
-  ttl      = 300
-  records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
+  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
 }
