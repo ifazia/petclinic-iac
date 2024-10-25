@@ -48,4 +48,13 @@ resource "aws_route53_record" "www_namespace" {
   ttl      = 300
 }
 
+# Validation du certificat ACM
+resource "aws_acm_certificate_validation" "petclinic_zone" {
+  provider                = aws.us-east-1
+  certificate_arn         = aws_acm_certificate.petclinic_zone.arn
+  validation_record_fqdns = [
+  for record in aws_route53_record.petclinic_zone : record.fqdn,
+  for record in aws_route53_record.www_namespace : record.fqdn
+  ]
+}
 
