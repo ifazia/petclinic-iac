@@ -44,7 +44,7 @@ resource "aws_route53_record" "www_namespace" {
   type     = "CNAME"
   records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
 }
----
+
 # Validation du certificat ACM
 resource "aws_acm_certificate_validation" "petclinic_zone" {
   provider                = aws.us-east-1
