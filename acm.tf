@@ -2,7 +2,6 @@
 resource "aws_route53_zone" "petclinic_zone" {
   name    = var.domain_name
   comment = "Zone hébergée pour le domaine Petclinic"
-  validation_method = "DNS"
 }
 
 # Zone hébergée pour le domaine
