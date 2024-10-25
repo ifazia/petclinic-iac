@@ -31,7 +31,7 @@ resource "aws_route53_record" "cert_validation" {
   zone_id = aws_route53_zone.petclinic_zone.zone_id
   name    = each.value.name
   type    = each.value.type
-  ttl     = 60
+  ttl     = 300
   records = [each.value.record]
 }
 
@@ -40,4 +40,14 @@ resource "aws_acm_certificate_validation" "petclinic_cert_validation" {
   provider                = aws.us-east-1
   certificate_arn         = aws_acm_certificate.petclinic_cert.arn
   validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
+}
+
+# Crée dynamiquement www-dev, www-staging, www-production
+resource "aws_route53_record" "www_namespace" {
+  for_each = toset(var.namespaces)
+
+  zone_id = aws_route53_zone.petclinicapp.zone_id
+  name     = "www-${each.key}.var.domain_name"
+  type     = "CNAME"
+  records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
 }
