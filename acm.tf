@@ -29,7 +29,7 @@ resource "aws_route53_record" "petclinic_validation" {
   records         = [each.value.record]
   ttl             = 300
   type            = each.value.type
-  zone_id         = ressource.aws_route53_zone.petclinic_zone.zone_id
+  zone_id         = aws_route53_zone.petclinic_zone.zone_id
 }
 
 # Crée dynamiquement www-dev, www-staging, www-production
