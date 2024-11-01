@@ -43,15 +43,20 @@ resource "aws_route53_record" "petclinic_validation" {
   #ttl      = 300
 #}
 
-# Validation du certificat ACM
-resource "aws_acm_certificate_validation" "petclinic_validation" {
-  provider                = aws.us-east-1
-  certificate_arn         = aws_acm_certificate.petclinic_cert.arn
-   #validation_record_fqdns = flatten([
-    #[for record in aws_route53_record.petclinic_validation : record.fqdn]
-    #,[for record in aws_route53_record.www_namespace : record.fqdn]
-  #])
-  validation_record_fqdns =[for record in aws_route53_record.petclinic_zone : record.fqdn]
+# Enregistrement DNS pour la validation du certificat
+resource "aws_route53_record" "petclinic_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.petclinic_cert.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
 
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 300
+  type            = each.value.type
+  zone_id         = aws_route53_zone.petclinic_zone.zone_id
 }
-
