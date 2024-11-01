@@ -8,7 +8,12 @@ resource "aws_security_group" "petclinic-rds-sg" {
     protocol    = "tcp"
     cidr_blocks = module.vpc.private_subnets_cidr_blocks
   }
-
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   tags = {
     Name      = "petclinic-rds-sg",
     petclinic = ""
@@ -60,6 +65,12 @@ module "vet_db" {
       value = "utf8mb4"
     }
   ]
+  # Instance master dans us-east-1a
+  availability_zone = "us-east-1a"
+
+  # Ajouter des instances répliques dans us-east-1b
+  number_of_replicas = 1 # ou plus selon vos besoins
+  replica_availability_zones = ["us-east-1b"]
 }
 
 module "visit_db" {
@@ -107,6 +118,12 @@ module "visit_db" {
       value = "utf8mb4"
     }
   ]
+  # Instance master dans us-east-1a
+  availability_zone = "us-east-1a"
+
+  # Ajouter des instances répliques dans us-east-1b
+  number_of_replicas = 1 # ou plus selon vos besoins
+  replica_availability_zones = ["us-east-1b"]
 }
 
 module "customer_db" {
@@ -154,4 +171,10 @@ module "customer_db" {
       value = "utf8mb4"
     }
   ]
+  # Instance master dans us-east-1a
+  availability_zone = "us-east-1a"
+
+  # Ajouter des instances répliques dans us-east-1b
+  number_of_replicas = 1 # ou plus selon vos besoins
+  replica_availability_zones = ["us-east-1b"]
 }
