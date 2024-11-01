@@ -35,10 +35,10 @@ resource "aws_dynamodb_table" "terraform_locks" {
 # Configuration du backend S3 pour Terraform avec DynamoDB pour le verrouillage
 terraform {
   backend "s3" {
-    bucket         = var.s3_bucket_name
+    bucket         = "tfstate-petclinic-bucket"
     key            = "tfstatefiles/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = var.dynamodb_table_name
+    dynamodb_table = "terraform-state-locks"
     encrypt        = true
   }
 }
