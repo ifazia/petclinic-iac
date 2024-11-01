@@ -33,23 +33,25 @@ resource "aws_route53_record" "petclinic_validation" {
 }
 
 # Crée dynamiquement www-dev, www-staging, www-production
-resource "aws_route53_record" "www_namespace" {
-  for_each = toset(var.namespaces)
+#resource "aws_route53_record" "www_namespace" {
+  #for_each = toset(var.namespaces)
 
-  zone_id = aws_route53_zone.petclinic_zone.zone_id
-  name     = "www-${each.key}.petclinicapp.net"
-  type     = "CNAME"
-  records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
-  ttl      = 300
-}
+  #zone_id = aws_route53_zone.petclinic_zone.zone_id
+  #name     = "www-${each.key}.petclinicapp.net"
+  #type     = "CNAME"
+  #records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
+  #ttl      = 300
+#}
 
 # Validation du certificat ACM
 resource "aws_acm_certificate_validation" "petclinic_validation" {
   provider                = aws.us-east-1
   certificate_arn         = aws_acm_certificate.petclinic_cert.arn
-   validation_record_fqdns = flatten([
-    [for record in aws_route53_record.petclinic_validation : record.fqdn],
-    [for record in aws_route53_record.www_namespace : record.fqdn]
-  ])
+   #validation_record_fqdns = flatten([
+    #[for record in aws_route53_record.petclinic_validation : record.fqdn]
+    #,[for record in aws_route53_record.www_namespace : record.fqdn]
+  #])
+  validation_record_fqdns =[for record in aws_route53_record.petclinic_zone : record.fqdn]
+
 }
 
