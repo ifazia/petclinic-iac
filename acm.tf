@@ -33,30 +33,12 @@ resource "aws_route53_record" "petclinic_validation" {
 }
 
 # Crée dynamiquement www-dev, www-staging, www-production
-#resource "aws_route53_record" "www_namespace" {
-  #for_each = toset(var.namespaces)
+resource "aws_route53_record" "www_namespace" {
+  for_each = toset(var.namespaces)
 
-  #zone_id = aws_route53_zone.petclinic_zone.zone_id
-  #name     = "www-${each.key}.petclinicapp.net"
-  #type     = "CNAME"
-  #records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
-  #ttl      = 300
-#}
-
-# Enregistrement DNS pour la validation du certificat
-resource "aws_route53_record" "petclinic_validation" {
-  for_each = {
-    for dvo in aws_acm_certificate.petclinic_cert.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  }
-
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 300
-  type            = each.value.type
-  zone_id         = aws_route53_zone.petclinic_zone.zone_id
+  zone_id = aws_route53_zone.petclinic_zone.zone_id
+  name     = "www-${each.key}.petclinicapp.net"
+  type     = "CNAME"
+  records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
+  ttl      = 300
 }
