@@ -68,9 +68,6 @@ module "vet_db" {
   # Instance master dans us-east-1a
   availability_zone = "us-east-1a"
 
-  # Ajouter des instances répliques dans us-east-1b
-  number_of_replicas = 1 # ou plus selon vos besoins
-  replica_availability_zones = ["us-east-1b"]
 }
 
 module "visit_db" {
@@ -121,9 +118,6 @@ module "visit_db" {
   # Instance master dans us-east-1a
   availability_zone = "us-east-1a"
 
-  # Ajouter des instances répliques dans us-east-1b
-  number_of_replicas = 1 # ou plus selon vos besoins
-  replica_availability_zones = ["us-east-1b"]
 }
 
 module "customer_db" {
@@ -174,7 +168,4 @@ module "customer_db" {
   # Instance master dans us-east-1a
   availability_zone = "us-east-1a"
 
-  # Ajouter des instances répliques dans us-east-1b
-  number_of_replicas = 1 # ou plus selon vos besoins
-  replica_availability_zones = ["us-east-1b"]
 }
