@@ -35,3 +35,14 @@ variable "domain_name" {
   type    = string
   default = "petclinicapp.net"
 }
+variable "s3_bucket_name" {
+  description = "Nom du bucket S3 pour stocker les fichiers d'état"
+  type        = string
+  default = "tfstate-petclinic-bucket"
+}
+
+variable "dynamodb_table_name" {
+  description = "Nom de la table DynamoDB pour le verrouillage"
+  type        = string
+  default = "terraform-state-locks"
+}
