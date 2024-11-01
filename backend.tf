@@ -1,7 +1,6 @@
 # Configuration du bucket S3 pour stocker les fichiers d'état
 resource "aws_s3_bucket" "tfstate" {
   bucket = "tfstate-petclinic-bucket"
-  acl    = "private"
 
   tags = {
     Name = "Petclinic Terraform State Bucket"
@@ -11,7 +10,11 @@ resource "aws_s3_bucket" "tfstate" {
 # Configuration de la version du bucket S3
 resource "aws_s3_bucket_versioning" "tfstate_versioning" {
   bucket = aws_s3_bucket.tfstate.id
-  enabled = true
+  
+  # Définir l'état de versioning
+  versioning_configuration {
+    status = "Enabled" # Utiliser "Enabled" pour activer la versioning
+  }
 }
 
 # Table DynamoDB pour le verrouillage de l'état Terraform

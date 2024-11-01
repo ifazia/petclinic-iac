@@ -9,6 +9,7 @@ resource "aws_acm_certificate" "petclinic_cert" {
   provider          = aws.us-east-1
   domain_name       = var.domain_name
   validation_method = "DNS"
+  
   lifecycle {
     create_before_destroy = true
   }
@@ -32,13 +33,14 @@ resource "aws_route53_record" "petclinic_validation" {
   zone_id         = aws_route53_zone.petclinic_zone.zone_id
 }
 
-# Crée dynamiquement www-dev, www-staging, www-production
-resource "aws_route53_record" "www_namespace" {
-  for_each = toset(var.namespaces)
 
-  zone_id = aws_route53_zone.petclinic_zone.zone_id
-  name     = "www-${each.key}.petclinicapp.net"
-  type     = "CNAME"
-  records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
-  ttl      = 300
-}
+# Crée dynamiquement www-dev, www-staging, www-production
+#resource "aws_route53_record" "www_namespace" {
+  #for_each = toset(var.namespaces)
+
+  #zone_id = aws_route53_zone.petclinic_zone.zone_id
+  #name     = "www-${each.key}.petclinicapp.net"
+  #type     = "CNAME"
+  #records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
+  #ttl      = 300
+#}
