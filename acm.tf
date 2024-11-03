@@ -1,4 +1,4 @@
-# Création de la zone hébergée pour le domaine
+# Zone hébergée pour le domaine
 resource "aws_route53_zone" "petclinic_zone" {
   name    = var.domain_name
   comment = "Zone hébergée pour le domaine Petclinic"
@@ -9,13 +9,18 @@ resource "aws_acm_certificate" "petclinic_cert" {
   provider          = aws.us-east-1
   domain_name       = var.domain_name
   validation_method = "DNS"
-  
+
+  subject_alternative_names = [
+    var.domain_name,           # Domaine principal
+    "*.petclinicapp.net"       # Wildcard pour couvrir les sous-domaines
+  ]
+
   lifecycle {
     create_before_destroy = true
   }
 }
 
-# Enregistrement DNS pour la validation du certificat
+# Validation DNS pour le certificat ACM
 resource "aws_route53_record" "petclinic_validation" {
   for_each = {
     for dvo in aws_acm_certificate.petclinic_cert.domain_validation_options : dvo.domain_name => {
@@ -33,14 +38,16 @@ resource "aws_route53_record" "petclinic_validation" {
   zone_id         = aws_route53_zone.petclinic_zone.zone_id
 }
 
+# Enregistrements DNS pour les environnements (dev, staging, production)
+resource "aws_route53_record" "alb_dns_records" {
+  for_each = toset(var.namespaces)  # Par exemple, var.namespaces = ["dev", "staging", "production"]
 
-# Crée dynamiquement www-dev, www-staging, www-production
-#resource "aws_route53_record" "www_namespace" {
-  #for_each = toset(var.namespaces)
-
-  #zone_id = aws_route53_zone.petclinic_zone.zone_id
-  #name     = "www-${each.key}.petclinicapp.net"
-  #type     = "CNAME"
-  #records  = ["petclinicapp.net"]  # Redirige vers petclinicapp.net
-  #ttl      = 300
-#}
+  zone_id = aws_route53_zone.petclinic_zone.zone_id
+  name    = "www-${each.key}.${var.domain_name}"
+  type    = "A"
+  alias {
+    name                   = aws_lb.alb.dns_name
+    zone_id                = aws_lb.alb.zone_id
+    evaluate_target_health = true
+  }
+}
