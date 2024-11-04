@@ -38,16 +38,13 @@ resource "aws_route53_record" "petclinic_validation" {
   zone_id         = aws_route53_zone.petclinic_zone.zone_id
 }
 
-# Enregistrements DNS pour les environnements (dev, staging, production)
-resource "aws_route53_record" "alb_dns_records" {
-  for_each = toset(var.namespaces)  # Par exemple, var.namespaces = ["dev", "staging", "production"]
+# Crée dynamiquement www-dev, www-staging, www-production
+resource "aws_route53_record" "www_namespace" {
+  for_each = toset(var.namespaces)
 
   zone_id = aws_route53_zone.petclinic_zone.zone_id
-  name    = "www-${each.key}.${var.domain_name}"
-  type    = "A"
-  alias {
-    name                   = aws_lb.alb.dns_name
-    zone_id                = aws_lb.alb.zone_id
-    evaluate_target_health = true
-  }
+  name     = "www-${each.key}.${var.domain_name}"  # Utilisation de var.domain_name
+  type     = "CNAME"
+  records  = [var.domain_name]  # Redirige vers le domaine principal
+  ttl      = 300
 }
