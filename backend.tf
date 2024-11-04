@@ -9,7 +9,7 @@
 
 # Configuration de la version du bucket S3
 resource "aws_s3_bucket_versioning" "tfstate_versioning" {
-  bucket = aws_s3_bucket.tfstate.id
+  bucket = var.s3_bucket_name #aws_s3_bucket.tfstate.id
   
   versioning_configuration {
     status = "Enabled"
@@ -35,10 +35,10 @@ resource "aws_s3_bucket_versioning" "tfstate_versioning" {
 # Configuration du backend S3 pour Terraform avec DynamoDB pour le verrouillage
 terraform {
   backend "s3" {
-    bucket         = "tfstate-petclinic-bucket"
+    bucket         = var.s3_bucket_name
     key            = "tfstatefiles/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "terraform-state-locks"
+    dynamodb_table = var.dynamodb_table_name
     encrypt        = true
   }
 }
