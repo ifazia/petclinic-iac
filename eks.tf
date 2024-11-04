@@ -83,7 +83,7 @@ resource "kubernetes_service_account" "service-account" {
 resource "aws_security_group" "alb_sg" {
   name        = "my-alb-sg"
   description = "Security group for ALB"
-
+  vpc_id = module.vpc.vpc_id
   ingress {
     from_port   = 80
     to_port     = 80
