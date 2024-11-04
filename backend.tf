@@ -1,11 +1,11 @@
 # Configuration du bucket S3 pour stocker les fichiers d'état
-#resource "aws_s3_bucket" "tfstate" {
-  #bucket = var.s3_bucket_name
+resource "aws_s3_bucket" "tfstate" {
+  bucket = var.s3_bucket_name
 
-  #tags = {
-    #Name = "Petclinic Terraform State Bucket"
-  #}
-#}
+  tags = {
+    Name = "Petclinic Terraform State Bucket"
+  }
+}
 
 # Configuration de la version du bucket S3
 resource "aws_s3_bucket_versioning" "tfstate_versioning" {
@@ -17,20 +17,20 @@ resource "aws_s3_bucket_versioning" "tfstate_versioning" {
 }
 
 # Table DynamoDB pour le verrouillage de l'état Terraform
-#resource "aws_dynamodb_table" "terraform_locks" {
-  #name         = var.dynamodb_table_name
-  #billing_mode = "PAY_PER_REQUEST"
-  #hash_key     = "LockID"
+resource "aws_dynamodb_table" "terraform_locks" {
+  name         = var.dynamodb_table_name
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
 
-  #attribute {
-    #name = "LockID"
-    #type = "S"
-  #}
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
 
-  #tags = {
-    #Name = "Terraform Lock Table"
-  #}
-#}
+  tags = {
+    Name = "Terraform Lock Table"
+  }
+}
 
 # Configuration du backend S3 pour Terraform avec DynamoDB pour le verrouillage
 terraform {
