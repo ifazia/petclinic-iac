@@ -11,7 +11,6 @@ module "eks" {
 
   vpc_id                                   = module.vpc.vpc_id
   subnet_ids                               = module.vpc.private_subnets
-  kms_key_arn = var.kms_key_arn
   cluster_endpoint_public_access           = true
   enable_cluster_creator_admin_permissions = true
 
@@ -33,6 +32,25 @@ module "eks" {
       desired_size = 2
     }
   }
+}
+
+# Ajouter la configuration de chiffrement KMS après la création du cluster
+resource "aws_eks_cluster" "encryption_config" {
+  name     = module.eks.cluster_name
+  role_arn = module.eks.cluster_arn
+
+  vpc_config {
+    subnet_ids = module.vpc.private_subnets
+  }
+
+  encryption_config {
+    resources = ["secrets"]
+    provider {
+      key_arn = var.kms_key_arn
+    }
+  }
+
+  depends_on = [module.eks]
 }
 
 module "lb_role" {
