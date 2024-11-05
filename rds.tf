@@ -42,7 +42,7 @@ module "vet_db" {
     petclinic = ""
   }
 
-  backup_retention_period = 7
+  backup_retention_period = 0 #7
   backup_window           = "03:00-06:00"
   skip_final_snapshot     = true
 
@@ -92,7 +92,7 @@ module "visit_db" {
     petclinic = ""
   }
 
-  backup_retention_period = 7
+  backup_retention_period = 0 #7
   backup_window           = "03:00-06:00"
   skip_final_snapshot     = true
 
@@ -142,7 +142,7 @@ module "customer_db" {
     petclinic = ""
   }
 
-  backup_retention_period = 7
+  backup_retention_period = 0 #7
   backup_window           = "03:00-06:00"
   skip_final_snapshot     = true
 
