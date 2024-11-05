@@ -46,3 +46,9 @@ variable "dynamodb_table_name" {
   type        = string
   default = "terraform-state-locks"
 }
+
+variable "kms_key_arn" {
+  description = "ARN de la clé KMS pour le chiffrement du cluster EKS"
+  type        = string
+  default     = "arn:aws:kms:us-east-1:590184139086:key/3241fc68-ae93-45b1-a940-c6408718d657"
+}
