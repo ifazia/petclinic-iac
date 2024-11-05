@@ -31,17 +31,7 @@ module "eks" {
       max_size     = 2
       desired_size = 2
     }
-    on_demand = {
-      name = "nodegroup-ondemand"
-
-      instance_types = ["t3.medium"]
-
-      min_size     = 1
-      max_size     = 3
-      desired_size = 2
-      capacity_type = "ON_DEMAND"  # Type de capacité
-    }
-    }
+  }
 }
 
 module "lb_role" {
@@ -80,31 +70,7 @@ resource "kubernetes_service_account" "service-account" {
     module.lb_role
   ]
 }
-resource "aws_security_group" "alb_sg" {
-  name        = "my-alb-sg"
-  description = "Security group for ALB"
-  vpc_id = module.vpc.vpc_id
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Permet l'accès à tout le monde sur le port 80
-  }
 
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Permet l'accès à tout le monde sur le port 443
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"  # Permet tout le trafic sortant
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
 resource "helm_release" "alb-controller" {
   name       = "aws-load-balancer-controller"
   repository = "https://aws.github.io/eks-charts"
@@ -134,24 +100,6 @@ resource "helm_release" "alb-controller" {
   set {
     name  = "clusterName"
     value = local.cluster_name
-  }
-
-  set {
-    name  = "subnets"
-    value = join(",", module.vpc.public_subnets)
-  }
-
-  set {
-    name  = "service.type"
-    value = "LoadBalancer"
-  }
-
-  set {
-    name  = "service.annotations"
-    value = <<-EOF
-      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
-      service.beta.kubernetes.io/aws-load-balancer-security-groups: ${aws_security_group.alb_sg.id}
-    EOF
   }
 
   depends_on = [

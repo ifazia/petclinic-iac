@@ -39,12 +39,12 @@ resource "aws_route53_record" "petclinic_validation" {
 }
 
 # Crée dynamiquement www-dev, www-staging, www-production
-resource "aws_route53_record" "www_namespace" {
-  for_each = toset(var.namespaces)
+#resource "aws_route53_record" "www_namespace" {
+  #for_each = toset(var.namespaces)
 
-  zone_id = aws_route53_zone.petclinic_zone.zone_id
-  name     = "www-${each.key}.${var.domain_name}"  # Utilisation de var.domain_name
-  type     = "CNAME"
-  records  = [var.domain_name]  # Redirige vers le domaine principal
-  ttl      = 300
-}
+  #zone_id = aws_route53_zone.petclinic_zone.zone_id
+  #name     = "www-${each.key}.${var.domain_name}"  # Utilisation de var.domain_name
+  #type     = "CNAME"
+  #records  = [var.domain_name]  # Redirige vers le domaine principal
+  #ttl      = 300
+#}
