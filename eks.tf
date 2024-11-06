@@ -34,25 +34,6 @@ module "eks" {
   }
 }
 
-# Ajouter la configuration de chiffrement KMS après la création du cluster
-resource "aws_eks_cluster" "encryption_config" {
-  name     = module.eks.cluster_name
-  role_arn = module.eks.cluster_arn
-
-  vpc_config {
-    subnet_ids = module.vpc.private_subnets
-  }
-
-  encryption_config {
-    resources = ["secrets"]
-    provider {
-      key_arn = var.kms_key_arn
-    }
-  }
-
-  depends_on = [module.eks]
-}
-
 module "lb_role" {
   source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
 
@@ -98,7 +79,7 @@ resource "helm_release" "alb-controller" {
 
   set {
     name  = "region"
-    value = "us-east-1"
+    value = "eu-west-3"
   }
 
   set {
