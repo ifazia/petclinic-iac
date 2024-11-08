@@ -3,7 +3,9 @@ run-name: Starting to apply terraform
 on: 
   push:
     branches:
-      - "main"
+      - "main"       # Production
+      - "staging"    # Staging
+      - "dev"        # Development
 jobs:
   update-infrastructure:
     runs-on: ubuntu-22.04
@@ -16,7 +18,7 @@ jobs:
       TF_VAR_DB_PASSWORD_VISIT:  ${{ secrets.DB_PASSWORD_VISIT }}
       TF_VAR_DB_PASSWORD_CUSTOMER:  ${{ secrets.DB_PASSWORD_CUSTOMER }}
       TF_VAR_GRAFANA_PASSWORD:  ${{ secrets.GRAFANA_PASSWORD }}
-    
+      TF_WORKSPACE: ${{ github.ref_name }}  # Utilise le nom de la branche comme workspace
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -29,6 +31,9 @@ jobs:
           terraform_version: "1.7.5"
           terraform_wrapper: false
       
+      - name: Select or Create Workspace
+        run: |
+          terraform workspace select $TF_WORKSPACE || terraform workspace new $TF_WORKSPACE
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
