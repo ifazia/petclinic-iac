@@ -1,12 +1,18 @@
 # Configuration du bucket S3 pour stocker les fichiers d'état
-resource "aws_s3_bucket" "tfstate" {
-  bucket = var.s3_bucket_name
+#resource "aws_s3_bucket" "tfstate" {
+  #bucket = var.s3_bucket_name
 
-  tags = {
-    Name = "Petclinic Terraform State Bucket"
+  #tags = {
+    #Name = "Petclinic Terraform State Bucket"
+  #}
+#}
+terraform {
+  backend "s3" {
+    bucket = var.s3_bucket_name
+    key    = "tfstatefiles/terraform.tfstate"
+    region = "us-east-1"
   }
 }
-
 # Configuration de la version du bucket S3
 resource "aws_s3_bucket_versioning" "tfstate_versioning" {
   bucket = aws_s3_bucket.tfstate.id
