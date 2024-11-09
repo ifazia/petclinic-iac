@@ -19,8 +19,6 @@ jobs:
       TF_VAR_DB_PASSWORD_VISIT:  ${{ secrets.DB_PASSWORD_VISIT }}
       TF_VAR_DB_PASSWORD_CUSTOMER:  ${{ secrets.DB_PASSWORD_CUSTOMER }}
       TF_VAR_GRAFANA_PASSWORD:  ${{ secrets.GRAFANA_PASSWORD }}
-      TF_WORKSPACE: ${{ github.ref_name }}  # Utilise le nom de la branche comme workspace
-
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -38,8 +36,10 @@ jobs:
         run: terraform init -reconfigure
 
       - name: Select or Create Workspace
+        env:
+          WORKSPACE: ${{ github.ref_name }}  # Utilise le nom de la branche comme workspace
         run: |
-          terraform workspace select $TF_WORKSPACE || terraform workspace new $TF_WORKSPACE
+          terraform workspace select $WORKSPACE || terraform workspace new $WORKSPACE
 
       - name: Terraform fmt
         id: fmt
