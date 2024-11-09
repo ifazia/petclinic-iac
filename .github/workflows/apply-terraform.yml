@@ -51,6 +51,6 @@ jobs:
         id: plan
         run: terraform plan -no-color -detailed-exitcode
         continue-on-error: true
-      - name: Terraform destroy
-        id: destroy
-        run: terraform destroy -auto-approve
+      - name: Terraform apply
+        id: apply
+        run: terraform apply -auto-approve
