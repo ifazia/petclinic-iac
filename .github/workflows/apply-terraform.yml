@@ -39,14 +39,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # Generate kubeconfig for the EKS cluster
-      - name: Generate kubeconfig for EKS
-        run: aws eks update-kubeconfig --name petclinic-eks --region us-east-1
-
-      # Test Kubernetes connection
-      - name: Test Kubernetes connection
-        run: kubectl get nodes
-
       - name: Terraform Init
         id: init
         run: terraform init -reconfigure
