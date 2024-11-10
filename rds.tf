@@ -1,25 +1,30 @@
+# Création du groupe de sécurité pour RDS
 resource "aws_security_group" "petclinic-rds-sg" {
   vpc_id = module.vpc.vpc_id
 
-  # Règle pour autoriser le trafic entrant sur le port 3306 depuis les sous-réseaux privés
+  # Autorisation du trafic entrant sur le port 3306 depuis les sous-réseaux privés
   ingress {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
     cidr_blocks = module.vpc.private_subnets_cidr_blocks
   }
+
+  # Autorisation du trafic sortant vers tout
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   tags = {
     Name      = "petclinic-rds-sg",
     petclinic = ""
   }
 }
 
+# Configuration de la base de données 'vet_db'
 module "vet_db" {
   source     = "terraform-aws-modules/rds/aws"
   identifier = "vet-db"
@@ -35,6 +40,7 @@ module "vet_db" {
   manage_master_user_password = false
   port                        = "3306"
 
+  # Lien avec le groupe de sécurité RDS
   vpc_security_group_ids = [aws_security_group.petclinic-rds-sg.id]
 
   tags = {
@@ -42,7 +48,7 @@ module "vet_db" {
     petclinic = ""
   }
 
-  backup_retention_period = 0 #7
+  backup_retention_period = 0 # 7
   backup_window           = "03:00-06:00"
   skip_final_snapshot     = true
 
@@ -50,10 +56,8 @@ module "vet_db" {
   subnet_ids             = module.vpc.private_subnets
 
   family = "mysql8.0"
-
   major_engine_version = "8.0"
-
-  deletion_protection = false
+  deletion_protection  = false
 
   parameters = [
     {
@@ -65,11 +69,11 @@ module "vet_db" {
       value = "utf8mb4"
     }
   ]
-  # Instance master dans us-east-1a
-  availability_zone = "us-east-1a"
 
+  availability_zone = "us-east-1a"
 }
 
+# Configuration de la base de données 'visit_db'
 module "visit_db" {
   source     = "terraform-aws-modules/rds/aws"
   identifier = "visit-db"
@@ -85,6 +89,7 @@ module "visit_db" {
   manage_master_user_password = false
   port                        = "3306"
 
+  # Lien avec le groupe de sécurité RDS
   vpc_security_group_ids = [aws_security_group.petclinic-rds-sg.id]
 
   tags = {
@@ -92,7 +97,7 @@ module "visit_db" {
     petclinic = ""
   }
 
-  backup_retention_period = 0 #7
+  backup_retention_period = 0 # 7
   backup_window           = "03:00-06:00"
   skip_final_snapshot     = true
 
@@ -100,10 +105,8 @@ module "visit_db" {
   subnet_ids             = module.vpc.private_subnets
 
   family = "mysql8.0"
-
   major_engine_version = "8.0"
-
-  deletion_protection = false
+  deletion_protection  = false
 
   parameters = [
     {
@@ -115,11 +118,11 @@ module "visit_db" {
       value = "utf8mb4"
     }
   ]
-  # Instance master dans us-east-1a
-  availability_zone = "us-east-1a"
 
+  availability_zone = "us-east-1a"
 }
 
+# Configuration de la base de données 'customer_db'
 module "customer_db" {
   source     = "terraform-aws-modules/rds/aws"
   identifier = "customer-db"
@@ -135,6 +138,7 @@ module "customer_db" {
   manage_master_user_password = false
   port                        = "3306"
 
+  # Lien avec le groupe de sécurité RDS
   vpc_security_group_ids = [aws_security_group.petclinic-rds-sg.id]
 
   tags = {
@@ -142,7 +146,7 @@ module "customer_db" {
     petclinic = ""
   }
 
-  backup_retention_period = 0 #7
+  backup_retention_period = 0 # 7
   backup_window           = "03:00-06:00"
   skip_final_snapshot     = true
 
@@ -150,10 +154,8 @@ module "customer_db" {
   subnet_ids             = module.vpc.private_subnets
 
   family = "mysql8.0"
-
   major_engine_version = "8.0"
-
-  deletion_protection = false
+  deletion_protection  = false
 
   parameters = [
     {
@@ -165,7 +167,6 @@ module "customer_db" {
       value = "utf8mb4"
     }
   ]
-  # Instance master dans us-east-1a
-  availability_zone = "us-east-1a"
 
+  availability_zone = "us-east-1a"
 }

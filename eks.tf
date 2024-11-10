@@ -219,4 +219,3 @@ resource "helm_release" "kube-prometheus-stack" {
     module.vpc
   ]
 }
-
