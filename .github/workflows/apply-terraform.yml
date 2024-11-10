@@ -31,6 +31,22 @@ jobs:
           terraform_version: "1.7.5"
           terraform_wrapper: false
 
+      # Configure AWS credentials for accessing EKS
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      # Generate kubeconfig for the EKS cluster
+      - name: Generate kubeconfig for EKS
+        run: aws eks update-kubeconfig --name petclinic-eks --region us-east-1
+
+      # Test Kubernetes connection
+      - name: Test Kubernetes connection
+        run: kubectl get nodes
+
       - name: Terraform Init
         id: init
         run: terraform init -reconfigure
@@ -41,7 +57,6 @@ jobs:
         run: |
           terraform workspace select $WORKSPACE || terraform workspace new $WORKSPACE
 
-      
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
