@@ -41,6 +41,40 @@ jobs:
         run: |
           terraform workspace select $WORKSPACE || terraform workspace new $WORKSPACE
 
+      - name: Import Existing IAM Role if Present
+        id: import_role
+        run: |
+          ROLE_NAME="petclinic_eks_lb"
+          ROLE_EXISTS=$(aws iam get-role --role-name "$ROLE_NAME" --query 'Role.RoleName' --output text 2>/dev/null || echo "RoleNotFound")
+
+          if [ "$ROLE_EXISTS" != "RoleNotFound" ]; then
+            echo "Role $ROLE_NAME already exists. Importing into Terraform state..."
+            terraform import module.lb_role.aws_iam_role.this[0] "$ROLE_NAME"
+
+            # Marquer cette ressource comme gérée par Terraform sans modification
+            terraform taint module.lb_role.aws_iam_role.this[0]
+          else
+            echo "Role $ROLE_NAME does not exist. Proceeding with creation in Terraform."
+          fi
+      - name: Check if KMS Alias exists and import
+        run: |
+          ALIAS_NAME="alias/eks/petclinic-eks"
+          ALIAS_EXISTS=$(aws kms list-aliases --query "Aliases[?AliasName=='$ALIAS_NAME'].AliasName" --output text)
+  
+          if [ "$ALIAS_EXISTS" == "$ALIAS_NAME" ]; then
+            echo "KMS Alias $ALIAS_NAME already exists."
+  
+            # Vérifier si l'alias est déjà dans l'état Terraform
+            terraform state list | grep "module.eks.module.kms.aws_kms_alias.this[\"cluster\"]" || terraform state rm "module.eks.module.kms.aws_kms_alias.this[\"cluster\"]"
+              
+            # Importer l'alias dans l'état Terraform
+            terraform import 'module.eks.module.kms.aws_kms_alias.this["cluster"]' "$ALIAS_NAME"
+              
+            # Marquer cette ressource comme gérée par Terraform sans modification
+            terraform taint 'module.eks.module.kms.aws_kms_alias.this["cluster"]'
+          else
+            echo "KMS Alias $ALIAS_NAME does not exist. Proceeding with creation in Terraform."
+          fi
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
@@ -50,28 +84,11 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: Check if KMS Alias exists and import
-        run: |
-          ALIAS_NAME="alias/eks/petclinic-eks"
-          ALIAS_EXISTS=$(aws kms list-aliases --query "Aliases[?AliasName=='$ALIAS_NAME'].AliasName" --output text)
-
-          if [ "$ALIAS_EXISTS" == "$ALIAS_NAME" ]; then
-            echo "KMS Alias $ALIAS_NAME already exists. Importing into Terraform state..."
-            
-            # Importer l'alias dans l'état Terraform
-            terraform import 'module.eks.module.kms.aws_kms_alias.this["cluster"]' "$ALIAS_NAME"
-            
-            # Marquer cette ressource comme gérée par Terraform sans modification
-            terraform taint 'module.eks.module.kms.aws_kms_alias.this["cluster"]'
-          else
-            echo "KMS Alias $ALIAS_NAME does not exist. Proceeding with creation in Terraform."
-          fi
-
       - name: Terraform Plan
         id: plan
         run: terraform plan -no-color -detailed-exitcode
         continue-on-error: true
 
-      - name: Terraform Apply
+      - name: Terraform apply
         id: apply
         run: terraform apply -auto-approve
