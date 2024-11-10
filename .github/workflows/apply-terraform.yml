@@ -44,7 +44,7 @@ jobs:
       - name: Remove existing IAM Role from Terraform state if present
         run: |
           terraform state rm module.lb_role.aws_iam_role.this[0] || echo "Role not found in state"
-
+          
       - name: Import Existing IAM Role if Present
         id: import_role
         run: |
@@ -93,6 +93,6 @@ jobs:
         run: terraform plan -no-color -detailed-exitcode
         continue-on-error: true
 
-      - name: Terraform destroy
-        id: destroy
-        run: terraform destroy -auto-approve
+      - name: Terraform apply
+        id: apply
+        run: terraform apply -auto-approve
