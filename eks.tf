@@ -79,7 +79,7 @@ resource "helm_release" "alb-controller" {
 
   set {
     name  = "region"
-    value = "eu-west-3" #us-east-1
+    value = "us-east-1"
   }
 
   set {
