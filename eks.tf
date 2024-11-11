@@ -121,7 +121,7 @@ resource "kubernetes_storage_class" "ebs_gp2" {
 
   storage_provisioner = "ebs.csi.aws.com"
   reclaim_policy      = "Delete"
-  volume_binding_mode = "WaitForFirstConsumer"
+  volume_binding_mode = "WaitForFirstConsumer" # Immediate
 
   parameters = {
     type = "gp2"
@@ -166,7 +166,7 @@ resource "helm_release" "kube-prometheus-stack" {
   }
   set {
     name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage"
-    value = "2Gi"
+    value = "2Gi" # à augmenter à 5 Gi
   }
 
   # Déployer les règles d'alerte via un ConfigMap
