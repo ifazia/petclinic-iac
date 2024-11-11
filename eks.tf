@@ -24,20 +24,18 @@ module "eks" {
   eks_managed_node_groups = {
     one = {
       name = "node-group-1"
-
       instance_types = ["t3.medium"]
-
-      min_size     = 1
-      max_size     = 2
-      desired_size = 2
+      min_size       = 1
+      max_size       = 2
+      desired_size   = 2
     }
   }
 }
 
+# Role pour AWS Load Balancer Controller
 module "lb_role" {
   source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-
-  role_name                              = "petclinic_eks_lb"
+  role_name = "petclinic_eks_lb"
   attach_load_balancer_controller_policy = true
 
   oidc_providers = {
@@ -47,9 +45,7 @@ module "lb_role" {
     }
   }
 
-  depends_on = [
-    module.eks
-  ]
+  depends_on = [module.eks]
 }
 
 resource "kubernetes_service_account" "service-account" {
@@ -65,10 +61,7 @@ resource "kubernetes_service_account" "service-account" {
       "eks.amazonaws.com/sts-regional-endpoints" = "true"
     }
   }
-
-  depends_on = [
-    module.lb_role
-  ]
+  depends_on = [module.lb_role]
 }
 
 resource "helm_release" "alb-controller" {
@@ -81,30 +74,60 @@ resource "helm_release" "alb-controller" {
     name  = "region"
     value = "us-east-1"
   }
-
   set {
     name  = "vpcId"
     value = module.vpc.vpc_id
   }
-
   set {
     name  = "serviceAccount.create"
     value = "false"
   }
-
   set {
     name  = "serviceAccount.name"
     value = "aws-load-balancer-controller"
   }
-
   set {
     name  = "clusterName"
     value = local.cluster_name
   }
 
-  depends_on = [
-    kubernetes_service_account.service-account
-  ]
+  depends_on = [kubernetes_service_account.service-account]
+}
+
+# Déployer le driver EBS CSI
+resource "helm_release" "ebs_csi_driver" {
+  name       = "aws-ebs-csi-driver"
+  repository = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
+  chart      = "aws-ebs-csi-driver"
+  namespace  = "kube-system"
+
+  set {
+    name  = "controller.serviceAccount.create"
+    value = "true"
+  }
+  set {
+    name  = "controller.serviceAccount.name"
+    value = "ebs-csi-controller-sa"
+  }
+
+  depends_on = [module.eks]
+}
+
+# Créer une StorageClass avec le driver EBS CSI
+resource "kubernetes_storage_class" "ebs_gp2" {
+  metadata {
+    name = "gp2-ebs-csi"
+  }
+
+  storage_provisioner = "ebs.csi.aws.com"
+  reclaim_policy      = "Delete"
+  volume_binding_mode = "WaitForFirstConsumer"
+
+  parameters = {
+    type = "gp2"
+  }
+
+  allow_volume_expansion = true
 }
 
 resource "helm_release" "kube-prometheus-stack" {
@@ -119,22 +142,18 @@ resource "helm_release" "kube-prometheus-stack" {
     name  = "grafana.adminPassword"
     value = var.GRAFANA_PASSWORD
   }
-
   set {
     name  = "grafana.ingress.enabled"
     value = "true"
   }
-
   set {
     name  = "grafana.ingress.ingressClassName"
     value = "alb"
   }
-
   set {
     name  = "grafana.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/scheme"
     value = "internet-facing"
   }
-
   set {
     name  = "grafana.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/target-type"
     value = "ip"
@@ -143,12 +162,11 @@ resource "helm_release" "kube-prometheus-stack" {
   # Configuration pour Prometheus
   set {
     name  = "prometheus.prometheusSpec.retention"
-    value = "1d"  # Définit la rétention à 1 jour et à ajuster selon le besoin
+    value = "1d"
   }
-
   set {
     name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage"
-    value = "2Gi" # à ajuster selon le besoin
+    value = "2Gi"
   }
 
   # Déployer les règles d'alerte via un ConfigMap
@@ -171,42 +189,7 @@ resource "helm_release" "kube-prometheus-stack" {
                 description = "L'utilisation de la CPU est trop élevée pendant plus de 5 minutes."
               }
             },
-            {
-              alert = "HighMemoryUsage"
-              expr  = "sum(container_memory_usage_bytes{container!=\"\",pod!=\"\"}) by (pod) / sum(container_spec_memory_limit_bytes{container!=\"\",pod!=\"\"}) by (pod) > 0.9"
-              for   = "5m"
-              labels = {
-                severity = "critical"
-              }
-              annotations = {
-                summary     = "Le pod {{ $labels.pod }} utilise plus de 90% de mémoire."
-                description = "L'utilisation de la mémoire est trop élevée pendant plus de 5 minutes."
-              }
-            },
-            {
-              alert = "HighHTTPErrorRate"
-              expr  = "sum(rate(http_requests_total{status=\"500\", job=\"spring-petclinic\"}[5m])) by (status) > 0.1"
-              for   = "5m"
-              labels = {
-                severity = "critical"
-              }
-              annotations = {
-                summary     = "Erreur HTTP 500 trop fréquente"
-                description = "Le taux d'erreurs HTTP 500 a dépassé le seuil pendant plus de 5 minutes."
-              }
-            },
-            {
-              alert = "HighNetworkUsage"
-              expr  = "sum(rate(node_network_receive_bytes_total[5m])) by (instance) > 1000000000"
-              for   = "5m"
-              labels = {
-                severity = "critical"
-              }
-              annotations = {
-                summary     = "Utilisation du réseau trop élevée sur {{ $labels.instance }}."
-                description = "L'utilisation du réseau a dépassé 1 Go/s pendant plus de 5 minutes."
-              }
-            }
+            # Ajouter des règles supplémentaires ici
           ]
         }
       ]
@@ -216,6 +199,7 @@ resource "helm_release" "kube-prometheus-stack" {
   depends_on = [
     kubernetes_service_account.service-account,
     helm_release.alb-controller,
-    module.vpc
+    module.vpc,
+    helm_release.ebs_csi_driver
   ]
 }
