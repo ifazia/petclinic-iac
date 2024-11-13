@@ -121,7 +121,7 @@ resource "kubernetes_storage_class" "ebs_gp2" {
 
   storage_provisioner = "ebs.csi.aws.com"
   reclaim_policy      = "Delete"
-  volume_binding_mode = "Immediate" # WaitForFirstConsumer
+  volume_binding_mode = "WaitForFirstConsumer" # Immediate
 
   parameters = {
     type = "gp2"
