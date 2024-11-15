@@ -1,5 +1,5 @@
 name: Apply Terraform
-run-name: Starting to apply terraform
+run-name: Starting to apply Terraform
 on: 
   push:
     branches:
@@ -43,6 +43,16 @@ jobs:
         id: init
         run: terraform init -reconfigure
 
+      # Set Namespace dynamically
+      - name: Set Namespace
+        id: set-namespace
+        run: |
+          if [ "${{ github.ref_name }}" == "main" ]; then
+            echo "NAMESPACE=production" >> $GITHUB_ENV
+          else
+            echo "NAMESPACE=${{ github.ref_name }}" >> $GITHUB_ENV
+          fi
+
       - name: Select or Create Workspace
         env:
           WORKSPACE: ${{ github.ref_name }}  # Utilise le nom de la branche comme workspace
@@ -60,9 +70,9 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color -detailed-exitcode
+        run: terraform plan -no-color -detailed-exitcode -var="namespace=$NAMESPACE"
         continue-on-error: true
 
-      - name: Terraform apply
-        id: apply
-        run: terraform apply -auto-approve
+      - name: Terraform destroy
+        id: destroy
+        run: terraform destroy -auto-approve -var="namespace=$NAMESPACE"
